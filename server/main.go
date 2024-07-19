@@ -68,7 +68,7 @@ func main() {
 
 	port := os.Getenv("SERVER_PORT")
 	url := fmt.Sprintf(":%s", port)
-	log.Fatal(http.ListenAndServe(url, nil))
+	http.ListenAndServe(url, nil)
 }
 
 func setupOAuthManager() *manage.Manager {
