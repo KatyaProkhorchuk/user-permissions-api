@@ -68,23 +68,25 @@ func main() {
 
 	port := os.Getenv("SERVER_PORT")
 	url := fmt.Sprintf(":%s", port)
-	http.ListenAndServe(url, nil)
+	if err := http.ListenAndServe(url, nil); err != nil {
+		log.Println("error listen", err)
+	}
 }
 
 func setupOAuthManager() *manage.Manager {
 	manager := manage.NewDefaultManager()
 	manager.MustTokenStorage(store.NewMemoryTokenStore())
 
-	clientStore := store.NewClientStore()
+	client := store.NewClientStore()
 	for id, creds := range clients {
-		clientStore.Set(id, &models.Client{
+		client.Set(id, &models.Client{
 			ID:     creds.ID,
 			Secret: creds.Secret,
 			Domain: creds.Domain,
 		})
 	}
 
-	manager.MapClientStorage(clientStore)
+	manager.MapClientStorage(client)
 	return manager
 }
 
