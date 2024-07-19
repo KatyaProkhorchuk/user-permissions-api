@@ -1,0 +1,62 @@
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGNAME}
+    ports:
+      - "${PGPORT}:${PGPORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - app-network
+  access:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - server
+    env_file:
+      - .env
+    ports:
+      - "${PORT_CLIENT}:${PORT_CLIENT}"
+      - "${PORT_ADMIN}:${PORT_ADMIN}"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - app-network
+  server:
+    image: server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    env_file:
+      - .env 
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    networks:
+      - app-network
+  test:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.test
+    depends_on:
+      - postgres
+      - access
+    env_file:
+      - .env 
+    networks:
+      - app-network
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
+
+volumes:
+  postgres_data:

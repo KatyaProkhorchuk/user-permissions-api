@@ -1,0 +1,12 @@
+{
+    "name": "Ritchie",
+    "user_access": {
+      "task": {
+        "agent": ["agent1", "agent2"]
+      },
+      "archive": {
+        "records": ["record1", "record2"]
+      }
+    }
+  }
+  
